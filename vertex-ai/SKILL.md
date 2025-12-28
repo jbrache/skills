@@ -1,22 +1,38 @@
 ---
 name: vertex-ai
-description: "Use Google Vertex AI Gemini models via google.genai SDK for text generation, structured JSON output, multimodal processing, and function calling. Use when: (1) User mentions Vertex AI, Gemini models, or google.genai SDK, (2) Working with Google Cloud Platform AI features, (3) Implementing generative AI features that require GCP integration, (4) User asks to use Google's latest AI models"
+description: "Use Google Vertex AI for generative AI: Gemini models via google.genai SDK and Anthropic Claude models via anthropic SDK. Supports text generation, structured JSON output, multimodal processing, and function calling. Use when: (1) User mentions Vertex AI, Gemini, or Claude models, (2) Working with Google Cloud Platform AI features, (3) Implementing generative AI on GCP, (4) User asks to use Google's or Anthropic's AI models on Vertex AI"
 ---
 
 # Vertex AI
 
-Use Google's generative AI models on Vertex AI through the `google.genai` SDK.
+Use generative AI models on Google Cloud Vertex AI:
+- **Gemini models** via `google.genai` SDK - Google's native models
+- **Claude models** via `anthropic` SDK - Anthropic's models on Vertex AI
 
 ## Setup
 
-Install the SDK:
+### For Gemini Models
+
+Install the Google Gen AI SDK:
 ```bash
+pip install google-genai
+# or with uv
 uv add google-genai
+```
+
+### For Claude Models
+
+Install the Anthropic SDK with Vertex AI support:
+```bash
+pip install -U google-cloud-aiplatform "anthropic[vertex]"
+# or with uv
+uv add google-cloud-aiplatform
+uv add "anthropic[vertex]"
 ```
 
 ## Quick Start
 
-Get started with a minimal example:
+### Using Gemini Models
 
 ```python
 from google import genai
@@ -33,9 +49,35 @@ response = client.models.generate_content(
 print(response.text)
 ```
 
+### Using Claude Models
+
+```python
+from anthropic import AnthropicVertex
+
+# Initialize client (requires gcloud auth)
+client = AnthropicVertex(
+    project_id="your-project-id",
+    region="global"  # or specific region like "us-east5"
+)
+
+# Generate text
+message = client.messages.create(
+    model="claude-sonnet-4-5@20250929",
+    max_tokens=1024,
+    messages=[
+        {
+            "role": "user",
+            "content": "Write a haiku about coding"
+        }
+    ]
+)
+
+print(message.content[0].text)
+```
+
 ## Client Initialization
 
-Import and initialize the client:
+### Gemini Client
 
 ```python
 from google import genai
@@ -51,20 +93,62 @@ client = genai.Client(
 )
 ```
 
+### Claude Client
+
+```python
+from anthropic import AnthropicVertex
+
+# Initialize with project and region
+client = AnthropicVertex(
+    project_id="your-project-id",
+    region="global"  # or "us-east5", "europe-west1", etc.
+)
+
+# Authentication: Run `gcloud auth application-default login` before using
+```
+
+**Note on Claude regions:**
+- Use `region="global"` for dynamic routing (recommended, no pricing premium)
+- Use specific regions (e.g., `"us-east5"`) for data residency requirements (10% pricing premium)
+
 ## Available Models
 
-### Model Selection Guide
+### Gemini Models (Google)
 
-| Model | Best For | Speed | Cost | Max Input/Output Tokens |
-|-------|----------|-------|------|------------------------|
-| **gemini-2.5-flash** | General tasks, high throughput, cost-sensitive workloads | Fast | Low | 1M input / 8K output |
-| **gemini-2.5-pro** | Complex reasoning, analysis, high-quality creative content | Medium | Higher | 2M input / 8K output |
-| **gemini-3-pro-preview** | Latest features, experimental capabilities (global location only) | Medium | Varies | 2M input / 8K output |
+| Model | Best For | Speed | Cost | Max Tokens |
+|-------|----------|-------|------|------------|
+| **gemini-2.5-flash** | General tasks, high throughput | Fast | Low | 1M in / 8K out |
+| **gemini-2.5-pro** | Complex reasoning, analysis | Medium | Higher | 2M in / 8K out |
+| **gemini-3-pro-preview** | Latest features (global only) | Medium | Varies | 2M in / 8K out |
 
-**When to use each model:**
-- **gemini-2.5-flash** (default): Chatbots, content summarization, simple classification, data extraction, high-volume API calls
-- **gemini-2.5-pro**: Advanced code generation, complex reasoning tasks, detailed analysis, nuanced creative writing
-- **gemini-3-pro-preview**: Testing cutting-edge features, requires `location='global'`
+### Claude Models (Anthropic)
+
+| Model ID | Best For | Speed | Cost | Max Tokens |
+|----------|----------|-------|------|------------|
+| **claude-sonnet-4-5@20250929** | Balanced performance, general tasks | Fast | Medium | 200K context |
+| **claude-opus-4-5@20251101** | Most intelligent, coding, agents | Medium | High | 200K context |
+| **claude-haiku-4-5@20251001** | Fast responses, simple tasks | Very Fast | Low | 200K context |
+
+See [reference/claude.md](reference/claude.md) for complete Claude model list and details.
+
+### Choosing Between Gemini and Claude
+
+**Use Gemini when:**
+- Deep Google Cloud integration needed
+- Structured JSON output required
+- Working with GCP-specific features
+- Cost optimization with Flash model
+
+**Use Claude when:**
+- Superior coding capabilities needed
+- Complex reasoning and analysis tasks
+- Agentic workflows and tool use
+- Vision tasks requiring high accuracy
+
+**Use both when:**
+- Comparing outputs for critical tasks
+- Ensemble approaches for higher accuracy
+- Different models excel at different subtasks
 
 ## Simple Text Generation
 
@@ -209,10 +293,14 @@ The SDK supports async operations via the `client.aio` interface. See [Streaming
 
 ## Additional Resources
 
-For advanced features and patterns, see the reference documentation:
+### Gemini-Specific References
 
 - **[Error Handling](reference/error-handling.md)** - Error handling and common issues
 - **[Configuration](reference/configuration.md)** - Generation parameters (temperature, top_p, etc.)
 - **[Streaming](reference/streaming.md)** - Streaming responses (sync and async)
 - **[Chat](reference/chat.md)** - Multi-turn conversations
 - **[Function Calling](reference/function-calling.md)** - Enable models to call your functions
+
+### Claude-Specific Reference
+
+- **[Claude on Vertex AI](reference/claude.md)** - Complete guide: models, streaming, vision, tool use, batch predictions
