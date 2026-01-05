@@ -19,7 +19,7 @@ def get_current_weather(location: str) -> str:
     return f"The weather in {location} is sunny, 72°F"
 
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents="What is the weather in Boston?",
     config=GenerateContentConfig(
         tools=[get_current_weather],
@@ -39,7 +39,7 @@ def set_light_color(color: Literal["red", "green", "blue"]) -> str:
     return f"Light set to {color}"
 
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents="Make the light blue",
     config=GenerateContentConfig(tools=[set_light_color]),
 )
@@ -58,7 +58,7 @@ def get_weather(location: str) -> str:
     return f"Sunny, 72°F in {location}"
 
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents="What's the weather in Boston?",
     config=GenerateContentConfig(tools=[get_weather]),
 )
@@ -72,7 +72,7 @@ if response.candidates[0].content.parts[0].function_call:
 
     # Continue conversation with function result
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3-flash-preview',
         contents=[
             "What's the weather in Boston?",
             response.candidates[0].content,  # Model's function call

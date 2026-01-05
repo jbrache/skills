@@ -46,7 +46,7 @@ import os
 # Define your agent
 agent = LlmAgent(
     name="my_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="You are a helpful assistant.",
     tools=[...]
 )
@@ -99,7 +99,7 @@ from google.adk.agents import LlmAgent
 def create_agent():
     return LlmAgent(
         name="vertex_agent",
-        model="gemini-2.5-flash",
+        model="gemini-3-flash-preview",
         instruction="You are a helpful assistant.",
         tools=[...]
     )
@@ -205,7 +205,7 @@ import os
 # Common configuration
 PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
 LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
-MODEL = os.environ.get("MODEL", "gemini-2.5-flash")
+MODEL = os.environ.get("MODEL", "gemini-3-flash-preview")
 
 agent = LlmAgent(
     name="configurable_agent",
@@ -372,7 +372,7 @@ gcloud run deploy my-agent \
 - Use `--min-instances 0` for infrequent traffic
 - Use `--min-instances 1+` to avoid cold starts
 - Choose appropriate CPU/memory allocation
-- Use `gemini-2.5-flash` for cost-effective deployments
+- Use `gemini-3-flash-preview` for cost-effective deployments
 - Implement caching for repeated queries
 
 ## Testing Deployments

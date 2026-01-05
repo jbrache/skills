@@ -15,7 +15,7 @@ from google.adk.tools import google_search
 
 agent = LlmAgent(
     name="search_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[google_search]
 )
 ```
@@ -27,7 +27,7 @@ from google.adk.tools import code_execution
 
 agent = LlmAgent(
     name="code_runner",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[code_execution]
 )
 ```
@@ -55,7 +55,7 @@ def get_weather(location: str, units: str = "celsius") -> str:
 
 agent = LlmAgent(
     name="weather_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[get_weather]
 )
 ```
@@ -86,7 +86,7 @@ weather_api = openapi_tool(
 
 agent = LlmAgent(
     name="api_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[weather_api]
 )
 ```
@@ -108,7 +108,7 @@ filesystem_tools = mcp_tool(
 
 agent = LlmAgent(
     name="file_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[filesystem_tools]
 )
 ```
@@ -150,7 +150,7 @@ search = vertex_ai_search_tool(
 
 agent = LlmAgent(
     name="cloud_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[bq, gcs, search]
 )
 ```
@@ -221,7 +221,7 @@ tool_config = ToolConfig(
 
 agent = LlmAgent(
     name="safe_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[get_weather, google_search, delete_data, send_email],
     tool_config=tool_config
 )
@@ -264,7 +264,7 @@ from google.adk.tools import google_search, code_execution
 
 research_agent = LlmAgent(
     name="researcher",
-    model="gemini-2.5-pro",
+    model="gemini-3-pro-preview",
     instruction="Research topics and analyze data.",
     tools=[google_search, code_execution]
 )

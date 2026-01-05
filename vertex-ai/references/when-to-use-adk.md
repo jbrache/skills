@@ -34,7 +34,7 @@ client = genai.Client(vertexai=True, location='global')
 
 # Direct, transparent API calls
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents='Explain quantum computing'
 )
 ```
@@ -47,13 +47,13 @@ Quick scripts, prototypes, or simple automation.
 ```python
 # Translate text
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents='Translate to Spanish: Hello, how are you?'
 )
 
 # Analyze an image
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=[
         'What is in this image?',
         types.Part.from_bytes(image_bytes, mime_type='image/jpeg')
@@ -98,7 +98,7 @@ Need to optimize every API call and minimize abstraction overhead.
 async def process_batch(items):
     tasks = [
         client.aio.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3-flash-preview',
             contents=item,
             config={'max_output_tokens': 100}  # Limit for cost
         )
@@ -130,7 +130,7 @@ class ExistingService:
 
         # Vertex AI call
         response = await self.genai_client.aio.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3-flash-preview',
             contents=processed
         )
 
@@ -157,7 +157,7 @@ from google.adk.tools import google_search, code_execution
 
 agent = LlmAgent(
     name="research_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Research topics and provide analysis.",
     tools=[google_search, code_execution]
 )
@@ -219,7 +219,7 @@ from google.adk.agents import LlmAgent
 
 agent = LlmAgent(
     name="customer_support",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Provide helpful customer support.",
     tools=[search_knowledge_base, create_ticket]
 )
@@ -251,7 +251,7 @@ def get_inventory(product_id: str) -> dict:
 # Prototype agent quickly
 agent = LlmAgent(
     name="sales_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Help customers find products.",
     tools=[google_search, get_inventory]
 )
@@ -273,7 +273,7 @@ from google import genai
 # Build agent with ADK
 agent = LlmAgent(
     name="production_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Production customer service agent",
     tools=[search_knowledge_base, create_ticket]
 )
@@ -319,7 +319,7 @@ from google import genai
 client = genai.Client(vertexai=True)
 
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=[
         'Describe this image',
         types.Part.from_bytes(image_bytes, mime_type='image/jpeg')
@@ -352,7 +352,7 @@ def analyze_data(data: str) -> dict:
 # Manual function calling loop
 prompt = "Research quantum computing trends"
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=prompt,
     config=GenerateContentConfig(tools=[search_web, analyze_data])
 )
@@ -369,7 +369,7 @@ while response.candidates[0].content.parts[0].function_call:
 
     # Continue conversation
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3-flash-preview',
         contents=[
             prompt,
             response.candidates[0].content,
@@ -396,7 +396,7 @@ def analyze_data(data: str) -> dict:
 
 agent = LlmAgent(
     name="researcher",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Research topics using search and analysis.",
     tools=[google_search, analyze_data]
 )
@@ -479,7 +479,7 @@ response = client.models.generate_content(
 # Phase 3: Migrate to ADK when complexity grows
 from google.adk.agents import LlmAgent
 agent = LlmAgent(
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[my_function]
 )
 

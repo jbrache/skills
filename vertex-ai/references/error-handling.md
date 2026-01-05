@@ -9,7 +9,7 @@ from google.api_core import exceptions
 
 try:
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3-flash-preview',
         contents=prompt
     )
     text = response.text
@@ -42,7 +42,7 @@ client = genai.Client(vertexai=True, location='global')
 try:
     # Generate with custom config
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3-flash-preview',
         contents='Write a haiku about programming',
         config=types.GenerateContentConfig(
             system_instruction='You are a creative poet.',

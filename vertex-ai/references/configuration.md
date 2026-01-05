@@ -8,7 +8,7 @@ Control model behavior with generation parameters.
 from google.genai import types
 
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents='Write a creative story about space exploration',
     config=types.GenerateContentConfig(
         temperature=0.9,           # 0.0-2.0: Higher = more creative/random
@@ -29,17 +29,17 @@ response = client.models.generate_content(
 
 ```python
 # Flash for speed
-response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+response = client.models.generate_content(model='gemini-3-flash-preview', contents=prompt)
 
 # Pro for quality
-response = client.models.generate_content(model='gemini-2.5-pro', contents=prompt)
+response = client.models.generate_content(model='gemini-3-pro-preview', contents=prompt)
 ```
 
 ## Combining System Instructions with Structured Output
 
 ```python
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=user_prompt,
     config={
         "system_instruction": "You are a helpful assistant that extracts themes from text.",

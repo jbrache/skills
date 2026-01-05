@@ -43,7 +43,7 @@ class CustomCallback(CallbackHandler):
 # Use callback
 agent = LlmAgent(
     name="monitored_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     callbacks=[CustomCallback()]
 )
 ```
@@ -61,7 +61,7 @@ arize_callback = ArizeCallback(
 
 agent = LlmAgent(
     name="observed_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     callbacks=[arize_callback]
 )
 
@@ -291,7 +291,7 @@ class CustomEventHandler(EventHandler):
 
 agent = LlmAgent(
     name="event_driven_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     event_handlers=[CustomEventHandler()]
 )
 ```
@@ -432,7 +432,7 @@ safety = SafetySettings(
 
 agent = LlmAgent(
     name="safe_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     safety_settings=safety
 )
 ```

@@ -7,7 +7,7 @@ Stream responses for real-time output.
 ```python
 # Basic streaming
 for chunk in client.models.generate_content_stream(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents='Tell me a story in 300 words.'
 ):
     print(chunk.text, end='')
@@ -17,7 +17,7 @@ for chunk in client.models.generate_content_stream(
 
 ```python
 async for chunk in client.aio.models.generate_content_stream(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents='Tell me a story in 300 words.'
 ):
     print(chunk.text, end='')
@@ -32,7 +32,7 @@ with open('image.jpg', 'rb') as f:
     image_bytes = f.read()
 
 for chunk in client.models.generate_content_stream(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=[
         'What is this image about?',
         types.Part.from_bytes(data=image_bytes, mime_type='image/jpeg'),
@@ -47,7 +47,7 @@ for chunk in client.models.generate_content_stream(
 # Async text generation (non-streaming)
 async def generate_async():
     response = await client.aio.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3-flash-preview',
         contents='Write a poem about mountains'
     )
     return response.text

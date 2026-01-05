@@ -42,7 +42,7 @@ client = genai.Client(vertexai=True, location='global')
 
 # Generate text
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents='Write a haiku about coding'
 )
 
@@ -117,9 +117,9 @@ client = AnthropicVertex(
 
 | Model | Best For | Speed | Cost | Max Tokens |
 |-------|----------|-------|------|------------|
-| **gemini-2.5-flash** | General tasks, high throughput | Fast | Low | 1M in / 8K out |
-| **gemini-2.5-pro** | Complex reasoning, analysis | Medium | Higher | 2M in / 8K out |
-| **gemini-3-pro-preview** | Latest features (global only) | Medium | Varies | 2M in / 8K out |
+| **gemini-3-pro-preview** | Latest features, complex reasoning (global only) | Medium | Higher | 2M in / 8K out |
+| **gemini-3-flash-preview** | Fast preview features, high throughput | Fast | Medium | 1M in / 8K out |
+| **gemini-2.5-flash-lite** | Ultra-fast, cost-effective tasks | Very Fast | Very Low | 1M in / 8K out |
 
 ### Claude Models (Anthropic)
 
@@ -159,7 +159,7 @@ from google.api_core import exceptions
 
 try:
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3-flash-preview',
         contents=prompt,
         config={
             "system_instruction": system_instruction  # Optional
@@ -181,7 +181,7 @@ except Exception as e:
 ```
 
 **Key parameters:**
-- `model`: Model name (default: `gemini-2.5-flash`)
+- `model`: Model name (default: `gemini-3-flash-preview`)
 - `contents`: User prompt or message
 - `config.system_instruction`: Optional system-level guidance for the model
 
@@ -201,7 +201,7 @@ class ThemeList(BaseModel):
 
 # Generate structured output
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=prompt,
     config={
         "system_instruction": system_instruction,
@@ -233,7 +233,7 @@ with open('image.jpg', 'rb') as f:
     image_bytes = f.read()
 
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=[
         'What is in this image?',
         types.Part.from_bytes(data=image_bytes, mime_type='image/jpeg'),
@@ -246,7 +246,7 @@ print(response.text)
 
 ```python
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=[
         'Describe this image in detail',
         types.Part.from_uri(uri='gs://your-bucket/image.jpg', mime_type='image/jpeg'),
@@ -263,7 +263,7 @@ with open('screenshot1.png', 'rb') as f1, open('screenshot2.png', 'rb') as f2:
     img2_bytes = f2.read()
 
 response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     contents=[
         'Compare these two screenshots and identify the differences:',
         types.Part.from_bytes(data=img1_bytes, mime_type='image/png'),

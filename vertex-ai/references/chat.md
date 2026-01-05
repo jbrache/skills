@@ -6,7 +6,7 @@ Create stateful conversations with the Vertex AI models.
 
 ```python
 # Create chat session
-chat = client.chats.create(model='gemini-2.5-flash')
+chat = client.chats.create(model='gemini-3-flash-preview')
 
 # Send messages
 response = chat.send_message("I have 2 dogs in my house.")
@@ -22,7 +22,7 @@ print(response.text)
 from google.genai.types import ModelContent, Part, UserContent
 
 chat = client.chats.create(
-    model='gemini-2.5-flash',
+    model='gemini-3-flash-preview',
     history=[
         UserContent(parts=[Part(text="Hello")]),
         ModelContent(parts=[Part(text="Great to meet you. What would you like to know?")]),

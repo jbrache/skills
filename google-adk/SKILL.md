@@ -39,7 +39,7 @@ from google.adk.tools import google_search
 
 agent = Agent(
     name="search_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="You are a helpful assistant. Answer questions using Google Search.",
     description="An assistant that can search the web.",
     tools=[google_search]
@@ -58,14 +58,14 @@ from google.adk.agents import LlmAgent
 # Define specialized agents
 greeter = LlmAgent(
     name="greeter",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Greet users warmly.",
     description="Handles greetings"
 )
 
 task_executor = LlmAgent(
     name="task_executor",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Execute tasks efficiently.",
     description="Executes tasks"
 )
@@ -73,7 +73,7 @@ task_executor = LlmAgent(
 # Create coordinator with sub-agents
 coordinator = LlmAgent(
     name="coordinator",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Coordinate greetings and tasks.",
     description="Routes to specialized agents",
     sub_agents=[greeter, task_executor]
@@ -90,7 +90,7 @@ response = coordinator.run(input="Hello! Can you help me?")
 ```python
 agent = LlmAgent(
     name="writer",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="You are a creative writer."
 )
 
@@ -117,7 +117,7 @@ def get_weather(location: str) -> str:
 
 agent = LlmAgent(
     name="weather_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Help users with weather information.",
     tools=[get_weather]
 )
@@ -137,7 +137,7 @@ weather_api = openapi_tool(
 
 agent = LlmAgent(
     name="api_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     tools=[weather_api]
 )
 ```
@@ -154,7 +154,7 @@ class WeatherReport(BaseModel):
 
 agent = LlmAgent(
     name="structured_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     response_model=WeatherReport
 )
 
@@ -175,14 +175,14 @@ for chunk in agent.stream(input="Tell me a story", config=config):
 
 ## Model Selection
 
-**gemini-2.5-flash**: Fast, cost-effective for most tasks
-**gemini-2.5-pro**: More capable for complex reasoning
-**gemini-3-pro-preview**: Latest preview (requires `location='global'`)
+**gemini-3-pro-preview**: Latest features, complex reasoning (requires `location='global'`)
+**gemini-3-flash-preview**: Fast preview features, high throughput
+**gemini-2.5-flash-lite**: Ultra-fast, cost-effective tasks
 
 ```python
 agent = LlmAgent(
     name="advanced_agent",
-    model="gemini-2.5-pro",  # or gemini-3-pro-preview
+    model="gemini-3-pro-preview",  # or gemini-3-flash-preview, gemini-2.5-flash-lite
     instruction="Handle complex reasoning tasks."
 )
 ```
@@ -278,7 +278,7 @@ from google.adk.tools import google_search, code_execution
 
 agent = LlmAgent(
     name="multi_tool_agent",
-    model="gemini-2.5-pro",
+    model="gemini-3-pro-preview",
     instruction="Research and analyze with code.",
     tools=[google_search, code_execution]
 )

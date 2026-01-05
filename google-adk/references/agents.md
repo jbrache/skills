@@ -11,7 +11,7 @@ from google.adk.agents import LlmAgent
 
 agent = LlmAgent(
     name="assistant",
-    model="gemini-2.5-flash",  # or gemini-2.5-pro, gemini-3-pro-preview
+    model="gemini-3-flash-preview",  # or gemini-3-pro-preview, gemini-2.5-flash-lite
     instruction="You are a helpful assistant...",
     description="Brief description for coordination",
     tools=[...]  # Optional tools
@@ -19,9 +19,9 @@ agent = LlmAgent(
 ```
 
 **Common models:**
-- `gemini-2.5-flash` - Fast, cost-effective for most tasks
-- `gemini-2.5-pro` - More capable, better for complex reasoning
-- `gemini-3-pro-preview` - Latest preview model (requires `location='global'`)
+- `gemini-3-pro-preview` - Latest features, complex reasoning (requires `location='global'`)
+- `gemini-3-flash-preview` - Fast preview features, high throughput
+- `gemini-2.5-flash-lite` - Ultra-fast, cost-effective tasks
 
 ### Custom Agent (BaseAgent)
 
@@ -48,7 +48,7 @@ from google.adk.agents import Agent
 
 agent = Agent(
     name="search_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="You are a helpful assistant.",
     description="An assistant that can search the web.",
     tools=[google_search]
@@ -65,14 +65,14 @@ from google.adk.agents import LlmAgent
 # Define specialized agents
 greeter = LlmAgent(
     name="greeter",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Greet users warmly and professionally.",
     description="Handles user greetings"
 )
 
 task_executor = LlmAgent(
     name="task_executor",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Execute tasks efficiently.",
     description="Executes specific tasks"
 )
@@ -80,7 +80,7 @@ task_executor = LlmAgent(
 # Create coordinator with sub-agents
 coordinator = LlmAgent(
     name="coordinator",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Coordinate between greeting and task execution.",
     description="Routes requests to specialized agents",
     sub_agents=[greeter, task_executor]  # Hierarchical structure
@@ -143,7 +143,7 @@ workflow = LoopAgent(
 ### Core Properties
 
 - **name** (required): Unique identifier for the agent
-- **model**: Gemini model to use (gemini-2.5-flash, gemini-2.5-pro, etc.)
+- **model**: Gemini model to use (gemini-3-pro-preview, gemini-3-flash-preview, gemini-2.5-flash-lite, etc.)
 - **instruction**: System prompt defining agent behavior
 - **description**: Brief description for coordination in multi-agent systems
 - **tools**: List of tools available to the agent

@@ -59,7 +59,7 @@ class ADKAgentExecutor(AgentExecutor):
 # Create ADK agent
 agent = LlmAgent(
     name="search_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Answer questions using Google Search.",
     tools=[google_search]
 )
@@ -92,7 +92,7 @@ Agent Card: `http://localhost:9999/.well-known/agent.json`
 # ADK sub-agents pattern
 coordinator = LlmAgent(
     name="coordinator",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Coordinate tasks",
     sub_agents=[agent1, agent2, agent3]  # All in same app
 )
@@ -200,7 +200,7 @@ def translate_text(text: str, target_language: str) -> str:
 # Create agent with multiple tools
 agent = LlmAgent(
     name="language_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="""You help with language tasks:
     - Search the web for information
     - Run code for analysis
@@ -274,7 +274,7 @@ class ConversationalExecutor(AgentExecutor):
 # Create conversational agent
 chatbot = LlmAgent(
     name="chatbot",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="You are a friendly conversational assistant. Remember context from previous messages."
 )
 
@@ -343,7 +343,7 @@ class StructuredExecutor(AgentExecutor):
 # Create agent with structured output
 analyzer = LlmAgent(
     name="analyzer",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Analyze text and provide structured insights.",
     response_model=AnalysisResult  # Optional: enforce structure
 )
@@ -363,7 +363,7 @@ Create a distributed multi-agent system where ADK agents communicate via A2A:
 # Agent 1: Research Agent (Port 9001)
 research_agent = LlmAgent(
     name="researcher",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Research topics using Google Search.",
     tools=[google_search]
 )
@@ -378,7 +378,7 @@ server1 = A2AServer(
 # Agent 2: Writing Agent (Port 9002)
 writer_agent = LlmAgent(
     name="writer",
-    model="gemini-2.5-pro",
+    model="gemini-3-pro-preview",
     instruction="Write high-quality content.",
     description="Writes content"
 )
@@ -517,7 +517,7 @@ from google import genai
 # Create ADK agent
 agent = LlmAgent(
     name="production_agent",
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     instruction="Production ADK agent",
     tools=[google_search]
 )
