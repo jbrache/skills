@@ -1,6 +1,6 @@
 ---
 name: google-adk
-description: "Build, evaluate, and deploy AI agents using Google's Agent Development Kit (ADK). Use when working with: (1) Building AI agents with Python, (2) Creating multi-agent systems or workflows, (3) Integrating tools (Google Search, OpenAPI, MCP, custom functions), (4) Deploying agents to Cloud Run, Vertex AI, or GKE, (5) Evaluating agent performance, (6) Implementing agentic workflows with callbacks, streaming, or sessions."
+description: "Build AI agents, chatbots, and autonomous assistants with tools, memory, and multi-agent systems using Python. Use when: (1) Creating agents/chatbots/assistants that use tools (Google Search, APIs, custom functions, databases), (2) Building multi-agent systems with specialized agents that collaborate, (3) Agents that remember conversation history or maintain state, (4) Deploying agents to Cloud Run, Vertex AI Agent Engine, or GKE, (5) Evaluating agent performance with test sets, (6) User mentions 'agent', 'chatbot', 'assistant', 'autonomous', 'multi-agent', 'ADK', or 'agentic'. Choose this over vertex-ai skill when building complete agents with tools and orchestration, not just making model API calls."
 ---
 
 # Google Agent Development Kit (ADK)
@@ -15,96 +15,49 @@ Open-source, code-first Python framework for building, evaluating, and deploying
 - **Model-agnostic**: Optimized for Gemini, compatible with other models
 - **Deploy anywhere**: Cloud Run, Vertex AI Agent Engine, GKE
 
-## Installation
+## Prerequisites
 
-**Stable release (recommended):**
+```bash
+# Authenticate with Google Cloud
+gcloud auth application-default login
+
+# Set your project
+export GOOGLE_CLOUD_PROJECT="your-project-id"
+```
+
+**Quick Vertex AI setup:**
+```bash
+echo "GOOGLE_GENAI_USE_VERTEXAI=true" >> .env
+echo "GOOGLE_CLOUD_LOCATION=global" >> .env
+```
+
+See [Configuration](references/configuration.md) for all auth methods.
+
+## Installation
 
 ```bash
 pip install google-adk
-```
-
-**Development version:**
-
-```bash
-pip install git+https://github.com/google/adk-python.git@main
+# or
+uv add google-adk
 ```
 
 ## Quick Start
 
-### Single Agent
+### 1. Create Project
 
-```python
-from google.adk.agents import Agent
-from google.adk.tools import google_search
-
-agent = Agent(
-    name="search_assistant",
-    model="gemini-3-flash-preview",
-    instruction="You are a helpful assistant. Answer questions using Google Search.",
-    description="An assistant that can search the web.",
-    tools=[google_search]
-)
-
-# Run the agent
-response = agent.run(input="What's the weather today?")
-print(response.text)
+```bash
+mkdir -p weather/weather-agent && cd weather
+uv init && uv add google-adk
 ```
 
-### Multi-Agent System
+### 2. Create Your Agent
 
 ```python
+# weather-agent/agent.py
 from google.adk.agents import LlmAgent
 
-# Define specialized agents
-greeter = LlmAgent(
-    name="greeter",
-    model="gemini-3-flash-preview",
-    instruction="Greet users warmly.",
-    description="Handles greetings"
-)
-
-task_executor = LlmAgent(
-    name="task_executor",
-    model="gemini-3-flash-preview",
-    instruction="Execute tasks efficiently.",
-    description="Executes tasks"
-)
-
-# Create coordinator with sub-agents
-coordinator = LlmAgent(
-    name="coordinator",
-    model="gemini-3-flash-preview",
-    instruction="Coordinate greetings and tasks.",
-    description="Routes to specialized agents",
-    sub_agents=[greeter, task_executor]
-)
-
-# ADK automatically delegates to appropriate sub-agent
-response = coordinator.run(input="Hello! Can you help me?")
-```
-
-## Core Use Cases
-
-### Text Generation
-
-```python
-agent = LlmAgent(
-    name="writer",
-    model="gemini-3-flash-preview",
-    instruction="You are a creative writer."
-)
-
-response = agent.run(input="Write a haiku about Python")
-```
-
-### Custom Function Tools
-
-```python
-from google.adk.tools import tool
-
-@tool
 def get_weather(location: str) -> str:
-    """Get weather for a location.
+    """Get current weather for a location.
 
     Args:
         location: City name
@@ -112,34 +65,53 @@ def get_weather(location: str) -> str:
     Returns:
         Weather information
     """
-    # Implementation
     return f"Weather in {location}: Sunny, 22°C"
 
-agent = LlmAgent(
+# ADK discovers this 'root_agent' variable automatically
+root_agent = LlmAgent(
     name="weather_assistant",
     model="gemini-3-flash-preview",
-    instruction="Help users with weather information.",
+    instruction="You are a helpful weather assistant. Use the get_weather tool to answer questions.",
+    description="Provides weather information",
     tools=[get_weather]
 )
-
-response = agent.run(input="What's the weather in Paris?")
 ```
 
-### OpenAPI Integration
+### 3. Test Your Agent
+
+```bash
+# Interactive UI
+uv run adk web
+# Opens http://localhost:8080 - select your agent and chat
+
+# Or use replay file
+uv run adk run weather-agent/ --replay test.json
+```
+
+### 4. Deploy (Optional)
+
+```bash
+# Deploy to Vertex AI Agent Engine (recommended)
+uv run adk deploy weather-agent/ --platform vertex-agent-engine
+
+# Or deploy to Cloud Run
+uv run adk deploy weather-agent/ --platform cloud-run
+```
+
+See [Deployment](references/deployment.md) for production patterns.
+
+---
+
+## Quick Reference
+
+### Multi-Turn Conversation
 
 ```python
-from google.adk.tools import openapi_tool
+from google.adk.sessions import Session
 
-weather_api = openapi_tool(
-    spec_url="https://api.example.com/openapi.json",
-    operations=["getCurrentWeather"]
-)
-
-agent = LlmAgent(
-    name="api_assistant",
-    model="gemini-3-flash-preview",
-    tools=[weather_api]
-)
+session = Session(session_id="user-123")
+response1 = agent.run(input="My name is Alice", session=session)
+response2 = agent.run(input="What's my name?", session=session)  # Remembers context
 ```
 
 ### Structured Output
@@ -150,175 +122,53 @@ from pydantic import BaseModel
 class WeatherReport(BaseModel):
     location: str
     temperature: float
-    condition: str
+    conditions: str
 
 agent = LlmAgent(
-    name="structured_agent",
+    name="weather_agent",
     model="gemini-3-flash-preview",
-    response_model=WeatherReport
-)
-
-response = agent.run(input="What's the weather?")
-# response.parsed is a WeatherReport instance
-```
-
-### Streaming Responses
-
-```python
-from google.adk.runtime import RunConfig
-
-config = RunConfig(streaming=True)
-
-for chunk in agent.stream(input="Tell me a story", config=config):
-    print(chunk, end="", flush=True)
-```
-
-## Model Selection
-
-**gemini-3-pro-preview**: Latest features, complex reasoning (requires `location='global'`)
-**gemini-3-flash-preview**: Fast preview features, high throughput
-**gemini-2.5-flash-lite**: Ultra-fast, cost-effective tasks
-
-```python
-agent = LlmAgent(
-    name="advanced_agent",
-    model="gemini-3-pro-preview",  # or gemini-3-flash-preview, gemini-2.5-flash-lite
-    instruction="Handle complex reasoning tasks."
+    instruction="Return weather data",
+    response_model=WeatherReport  # Enforces JSON schema
 )
 ```
+
+### Testing with Replay File
+
+```json
+{
+  "state": {"session_id": "test-001", "contents": []},
+  "queries": ["What's the weather in Tokyo?"]
+}
+```
+
+```bash
+uv run adk run weather_agent/ --replay test.json
+```
+
+### Model Selection
+
+| Model | Use For |
+|-------|---------|
+| `gemini-3-flash-preview` | Most tasks (default) |
+| `gemini-3-pro-preview` | Complex reasoning (requires `GOOGLE_CLOUD_LOCATION=global`) |
+| `gemini-2.5-flash-lite` | High volume, cost-sensitive |
 
 ## Related Skills
 
-### Multi-Agent Communication
-
-For agent-to-agent communication across distributed services:
-- **[a2a](../a2a/SKILL.md)** - A2A Protocol for standardized agent discovery and communication between independent services
-- See [A2A Integration](references/a2a-integration.md) for how to expose ADK agents via A2A protocol
-
-**Use ADK sub_agents when:** Multiple agents in a single application with shared context
-**Use A2A protocol when:** Agents are separate services that need to discover and communicate with each other
-
-### Direct Model API Access
-
-This framework abstracts model calls for convenience. For direct, low-level API access:
-- **[vertex-ai](../vertex-ai/SKILL.md)** - Low-level Vertex AI SDK for Gemini and Claude models with fine-grained control
-
-**Use ADK when:** Building complete agents with tools, evaluation, and orchestration
-**Use vertex-ai SDK when:** Need custom logic, learning fundamentals, or fine-grained control
-
-### Production Deployment
-
-To deploy ADK agents to managed infrastructure:
-- **[vertex-agent-engine](../vertex-agent-engine/SKILL.md)** - Deploy agents to Vertex AI with sessions, memory, monitoring, and auto-scaling
-
-See [Deployment](references/deployment.md) for deployment patterns including Cloud Run, Vertex AI Agent Engine, and GKE.
-
-## Development UI
-
-Test and debug agents locally:
-
-```bash
-adk ui my_agent/
-```
-
-Opens development interface at http://localhost:8080
-
-## Evaluation
-
-Create evaluation sets and test agents:
-
-```bash
-adk eval my_agent/ eval_set.evalset.json
-```
-
-## Advanced Topics
-
-For detailed information on advanced features, see the reference documentation:
-
-### Agent Patterns
-See [references/agents.md](references/agents.md) for:
-- LLM agents, custom agents, workflow agents
-- Multi-agent system design patterns
-- Sequential, parallel, and loop workflows
-- Agent properties and configuration
-
-### Tools Integration
-See [references/tools.md](references/tools.md) for:
-- Built-in tools (Google Search, code execution)
-- Function tools with decorators
-- OpenAPI and MCP integration
-- Google Cloud tools (BigQuery, Cloud Storage, Vertex AI Search)
-- Third-party tools (LangChain, LlamaIndex)
-- Tool authentication and configuration
-
-### Deployment
-See [references/deployment.md](references/deployment.md) for:
-- Cloud Run deployment (serverless, auto-scaling)
-- Vertex AI Agent Engine (managed infrastructure)
-- GKE deployment (Kubernetes)
-- Configuration, security, monitoring
-- API endpoints and authentication
-
-### Advanced Features
-See [references/advanced.md](references/advanced.md) for:
-- Callbacks for observability and control
-- Sessions, state, and memory management
-- Context passing between agents
-- Streaming (WebSocket, SSE, async)
-- Events and runtime configuration
-- Safety and security settings
-- Artifacts and evaluation
-
-## Common Patterns
-
-### Agent with Multiple Tools
-
-```python
-from google.adk.tools import google_search, code_execution
-
-agent = LlmAgent(
-    name="multi_tool_agent",
-    model="gemini-3-pro-preview",
-    instruction="Research and analyze with code.",
-    tools=[google_search, code_execution]
-)
-```
-
-### Persistent Sessions
-
-```python
-from google.adk.sessions import Session
-
-session = Session(session_id="user-123")
-
-# First turn
-response1 = agent.run(input="My name is Alice", session=session)
-
-# Second turn - agent remembers
-response2 = agent.run(input="What's my name?", session=session)
-```
-
-### Async Execution
-
-```python
-import asyncio
-
-async def run_async():
-    response = await agent.arun(input="Hello")
-    return response
-
-result = asyncio.run(run_async())
-```
+| Skill | When to Use |
+|-------|-------------|
+| **[vertex-ai](../vertex-ai/SKILL.md)** | Direct model API calls without agent framework |
+| **[a2a](../a2a/SKILL.md)** | Agent-to-agent communication across distributed services |
+| **[vertex-agent-engine](../vertex-agent-engine/SKILL.md)** | Deploy agents to managed infrastructure |
 
 ## Reference Documentation
 
-For detailed information on advanced features:
-
-- **[agents.md](references/agents.md)** - Agent patterns, multi-agent systems, workflows
-- **[tools.md](references/tools.md)** - Built-in tools, custom tools, integrations
-- **[deployment.md](references/deployment.md)** - Cloud Run, Vertex AI, GKE deployment
-- **[advanced.md](references/advanced.md)** - Callbacks, sessions, streaming, events
-- **[a2a-integration.md](references/a2a-integration.md)** - Exposing ADK agents via A2A protocol
+- **[agents.md](references/agents.md)** - Agent types, multi-agent systems, workflow patterns, instruction engineering
+- **[tools.md](references/tools.md)** - Built-in tools, custom tools, OpenAPI, MCP, Google Cloud integrations
+- **[configuration.md](references/configuration.md)** - Models, sessions, callbacks, runtime config, safety, auth
+- **[development.md](references/development.md)** - Project structure, testing, replay files, common errors
+- **[deployment.md](references/deployment.md)** - Vertex AI Agent Engine, Cloud Run deployment
+- **[error-handling.md](references/error-handling.md)** - Exception handling, retry strategies
 
 ## Additional Resources
 

@@ -1,6 +1,6 @@
 ---
 name: vertex-ai
-description: "Use Google Vertex AI for generative AI: Gemini models via google.genai SDK and Anthropic Claude models via anthropic SDK. Supports text generation, structured JSON output, multimodal processing, and function calling. Use when: (1) User mentions Vertex AI, Gemini, or Claude models, (2) Working with Google Cloud Platform AI features, (3) Implementing generative AI on GCP, (4) User asks to use Google's or Anthropic's AI models on Vertex AI"
+description: "Generate text, analyze images/PDFs/videos, create structured JSON output, and build AI features using Google's Gemini models or Anthropic's Claude models on Vertex AI. Use when: (1) Generating text with AI (summaries, content, responses), (2) Vision tasks (analyze/describe/caption images, extract text from PDFs/screenshots), (3) Multimodal processing (image+text, video analysis, audio transcription), (4) Structured output (JSON, Pydantic schemas, data extraction), (5) User mentions Vertex AI, Gemini, Claude, or GCP AI, (6) Direct model API calls needed (vs full agent framework). NOT for building agents with tools - use google-adk skill instead."
 ---
 
 # Vertex AI
@@ -298,6 +298,12 @@ This skill provides low-level SDK access for direct model API calls. For buildin
 - **[google-adk](../google-adk/SKILL.md)** - Agent Development Kit for code-first agent development with rich tool ecosystem, multi-agent systems, and built-in evaluation
 - **[vertex-agent-engine](../vertex-agent-engine/SKILL.md)** - Deploy ADK agents to managed infrastructure with sessions, memory, and monitoring
 - **[a2a](../a2a/SKILL.md)** - Agent-to-agent communication protocol for distributed multi-agent systems
+
+**Quick decision guide:**
+- 🔧 **Need an agent WITH tools?** → Use google-adk skill (agents can search, call APIs, execute code)
+- 📝 **Just calling AI models?** → Use this skill (generate text, analyze images, structured output)
+- 🚀 **Deploying to production?** → Use google-adk skill (built-in deployment patterns)
+- 🎯 **Learning fundamentals?** → Use this skill (understand model APIs directly)
 
 **When to use each:**
 - Use this skill (vertex-ai SDK) for: Fine-grained control, custom logic, learning the fundamentals

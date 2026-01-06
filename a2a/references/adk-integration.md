@@ -1,26 +1,23 @@
 # ADK Integration
 
-Integrate Google's Agent Development Kit (ADK) with the A2A Protocol to build capable agents that can communicate via standardized agent-to-agent interfaces.
+Expose Google ADK agents via A2A Protocol for standardized agent communication and discovery.
 
-## Why Combine ADK and A2A?
+## Why Use A2A with ADK?
 
-**ADK provides:**
-- High-level agent building blocks
-- Rich tool ecosystem (Google Search, code execution, OpenAPI, MCP)
+**ADK excels at:**
+- Building intelligent agents with tools
 - Multi-agent coordination within applications
-- Evaluation and testing frameworks
+- Testing and evaluation
 
-**A2A provides:**
-- Standardized communication protocol
+**A2A enables:**
+- Standardized agent-to-agent communication
 - Agent discovery via Agent Cards
+- Cross-platform, language-agnostic integration
 - Service-to-service agent interaction
-- Language and framework agnostic
 
-**Together:** Build powerful agents with ADK and expose them via A2A for distributed multi-agent systems.
+**Combine them to:** Build powerful ADK agents and expose them as A2A-compliant services for distributed systems.
 
-## Basic Pattern: ADK Agent with A2A Server
-
-Wrap an ADK agent in an A2A server to expose it via the protocol:
+## Quick Start: ADK Agent as A2A Server
 
 ```python
 import asyncio
@@ -33,60 +30,46 @@ from a2a.server.event_queue import EventQueue
 from a2a.types import Message, Part, Task
 
 
-class ADKExecutor(AgentExecutor):
-    """Wraps an ADK agent to expose via A2A protocol."""
+class ADKAgentExecutor(AgentExecutor):
+    """Wraps ADK agent to expose via A2A protocol."""
 
     def __init__(self, adk_agent: LlmAgent):
         self.agent = adk_agent
 
-    async def execute(
-        self,
-        context: RequestContext,
-        event_queue: EventQueue
-    ):
-        """Execute ADK agent and send response via A2A."""
-        # Extract user message from A2A request
-        user_text = context.message.parts[0].text
+    async def execute(self, context: RequestContext, event_queue: EventQueue):
+        # Get user message from A2A request
+        user_message = context.message.parts[0].text
 
-        # Run ADK agent (use async method)
-        response = await self.agent.arun(input=user_text)
+        # Run ADK agent
+        response = await self.agent.arun(input=user_message)
 
-        # Send response via A2A protocol
-        message = Message(
+        # Send response back via A2A
+        await event_queue.put(Message(
             role="agent",
             parts=[Part(type="text", text=response.text)]
-        )
-        await event_queue.put(message)
+        ))
 
-        # Complete task
-        task = Task(id=context.task_id, status="completed")
-        await event_queue.put(task)
+        # Mark task complete
+        await event_queue.put(Task(id=context.task_id, status="completed"))
 
-    async def cancel(
-        self,
-        context: RequestContext,
-        event_queue: EventQueue
-    ):
-        """Handle cancellation."""
-        task = Task(id=context.task_id, status="cancelled")
-        await event_queue.put(task)
+    async def cancel(self, context: RequestContext, event_queue: EventQueue):
+        await event_queue.put(Task(id=context.task_id, status="cancelled"))
 
 
-# Create ADK agent with tools
-search_agent = LlmAgent(
-    name="search_agent",
-    model="gemini-2.5-flash",
-    instruction="You are a helpful assistant. Use Google Search to answer questions accurately.",
-    description="Assistant with web search capabilities",
+# Create ADK agent
+agent = LlmAgent(
+    name="search_assistant",
+    model="gemini-3-flash-preview",
+    instruction="Answer questions using Google Search.",
     tools=[google_search]
 )
 
-# Create A2A server with ADK executor
+# Expose via A2A
 async def main():
     server = A2AServer(
-        agent_executor=ADKExecutor(search_agent),
+        agent_executor=ADKAgentExecutor(agent),
         agent_name="Search Assistant",
-        agent_description="ADK-powered agent with Google Search exposed via A2A protocol",
+        agent_description="ADK agent with Google Search",
         port=9999
     )
     await server.start()
@@ -94,54 +77,91 @@ async def main():
 asyncio.run(main())
 ```
 
+Access at: `http://localhost:9999`
+Agent Card: `http://localhost:9999/.well-known/agent.json`
+
+## When to Use A2A vs ADK Sub-Agents
+
+### Use ADK Sub-Agents When:
+- All agents are part of the same application
+- Agents share memory and context
+- You want automatic coordination by ADK
+- Deployment is as a single unit
+
+```python
+# ADK sub-agents pattern
+coordinator = LlmAgent(
+    name="coordinator",
+    model="gemini-3-flash-preview",
+    instruction="Coordinate tasks",
+    sub_agents=[agent1, agent2, agent3]  # All in same app
+)
+```
+
+### Use A2A Protocol When:
+- Agents are separate services
+- Need cross-platform communication
+- Agents should be independently deployable
+- Want standardized discovery and communication
+
+```python
+# A2A pattern - each agent is a separate service
+# Service 1: Calendar agent on port 9001
+# Service 2: Email agent on port 9002
+# Service 3: Task agent on port 9003
+# All discover and communicate via A2A protocol
+```
+
+### Hybrid Pattern:
+Use ADK sub-agents internally, expose coordinator via A2A:
+
+```python
+# Multi-agent system exposed via single A2A endpoint
+coordinator = LlmAgent(
+    name="coordinator",
+    sub_agents=[research_agent, writer_agent, analyzer_agent]
+)
+
+# Expose coordinator via A2A
+server = A2AServer(
+    agent_executor=ADKAgentExecutor(coordinator),
+    agent_name="Research Team",
+    agent_description="Multi-agent research system"
+)
+```
+
 ## Streaming Responses
 
-Stream ADK agent responses through the A2A protocol:
+Enable streaming for better UX with long-running ADK agents:
 
 ```python
 from google.adk.runtime import RunConfig
 
 
 class StreamingADKExecutor(AgentExecutor):
-    """ADK agent executor with streaming support."""
-
     def __init__(self, adk_agent: LlmAgent):
         self.agent = adk_agent
 
-    async def execute(
-        self,
-        context: RequestContext,
-        event_queue: EventQueue
-    ):
-        user_text = context.message.parts[0].text
+    async def execute(self, context: RequestContext, event_queue: EventQueue):
+        user_message = context.message.parts[0].text
 
-        # Stream from ADK agent
+        # Stream ADK agent responses
         config = RunConfig(streaming=True)
-
-        async for chunk in self.agent.stream(input=user_text, config=config):
-            # Send each chunk via A2A
-            message = Message(
+        async for chunk in self.agent.stream(input=user_message, config=config):
+            await event_queue.put(Message(
                 role="agent",
                 parts=[Part(type="text", text=chunk)]
-            )
-            await event_queue.put(message)
+            ))
 
-        # Complete task after streaming finishes
-        task = Task(id=context.task_id, status="completed")
-        await event_queue.put(task)
+        await event_queue.put(Task(id=context.task_id, status="completed"))
 
-    async def cancel(
-        self,
-        context: RequestContext,
-        event_queue: EventQueue
-    ):
-        task = Task(id=context.task_id, status="cancelled")
-        await event_queue.put(task)
+    async def cancel(self, context: RequestContext, event_queue: EventQueue):
+        await event_queue.put(Task(id=context.task_id, status="cancelled"))
 ```
 
-## Multi-Tool ADK Agent via A2A
+## Tool-Rich Agents via A2A
 
-Expose an ADK agent with multiple tools via A2A:
+Expose ADK agents with multiple tools:
 
 ```python
 from google.adk.agents import LlmAgent
@@ -149,302 +169,346 @@ from google.adk.tools import google_search, code_execution, tool
 
 
 @tool
-def get_weather(location: str) -> str:
-    """Get current weather for a location.
+def analyze_sentiment(text: str) -> str:
+    """Analyze sentiment of text.
 
     Args:
-        location: City name
+        text: Text to analyze
 
     Returns:
-        Weather information
+        Sentiment analysis (positive, negative, neutral)
     """
-    # Mock implementation
-    return f"Weather in {location}: Sunny, 72°F"
+    # Implementation
+    return "positive"
 
 
 @tool
-def calculator(operation: str, a: float, b: float) -> float:
-    """Perform basic math operations.
+def translate_text(text: str, target_language: str) -> str:
+    """Translate text to target language.
 
     Args:
-        operation: One of 'add', 'subtract', 'multiply', 'divide'
-        a: First number
-        b: Second number
+        text: Text to translate
+        target_language: Target language code (e.g., 'es', 'fr')
 
     Returns:
-        Result of the operation
+        Translated text
     """
-    if operation == "add":
-        return a + b
-    elif operation == "subtract":
-        return a - b
-    elif operation == "multiply":
-        return a * b
-    elif operation == "divide":
-        return a / b if b != 0 else 0
+    # Implementation
+    return f"Translated to {target_language}: {text}"
 
 
-# Create ADK agent with multiple tools
-multi_tool_agent = LlmAgent(
-    name="assistant",
-    model="gemini-2.5-flash",
-    instruction="""You are a versatile assistant with access to:
-    - Google Search for web information
-    - Code execution for running Python
-    - Weather information
-    - Calculator for math
+# Create agent with multiple tools
+agent = LlmAgent(
+    name="language_assistant",
+    model="gemini-3-flash-preview",
+    instruction="""You help with language tasks:
+    - Search the web for information
+    - Run code for analysis
+    - Analyze sentiment
+    - Translate text
 
-    Use tools appropriately to answer user questions.""",
-    tools=[google_search, code_execution, get_weather, calculator]
+    Use tools appropriately based on the user's request.""",
+    tools=[google_search, code_execution, analyze_sentiment, translate_text]
 )
 
-# Expose via A2A
+# Expose with tool information in Agent Card
 server = A2AServer(
-    agent_executor=ADKExecutor(multi_tool_agent),
-    agent_name="Multi-Tool Assistant",
-    agent_description="Versatile ADK agent with search, code, weather, and math capabilities",
+    agent_executor=ADKAgentExecutor(agent),
+    agent_name="Language Assistant",
+    agent_description="Multi-tool language assistant with search, code, sentiment, and translation",
     agent_capabilities={
         "streaming": True,
         "multiTurn": True,
-        "tools": ["google_search", "code_execution", "weather", "calculator"]
+        "supportedLanguages": ["en", "es", "fr", "de", "ja", "zh"],
+        "tools": ["google_search", "code_execution", "sentiment_analysis", "translation"]
     },
     port=9999
 )
 ```
 
-## Multi-Turn Conversations
+## Conversational Agents with Sessions
 
-Handle conversational state with ADK sessions:
+Maintain conversation history using ADK sessions:
 
 ```python
 from google.adk.sessions import Session
-from a2a.server.agent_execution import AgentExecutor
 
 
-class ConversationalADKExecutor(AgentExecutor):
-    """ADK executor that maintains conversation history."""
+class ConversationalExecutor(AgentExecutor):
+    """ADK executor that maintains conversation state."""
 
     def __init__(self, adk_agent: LlmAgent):
         self.agent = adk_agent
-        self.sessions = {}  # task_id -> ADK Session
+        self.sessions = {}  # Map A2A task_id to ADK Session
 
-    async def execute(
-        self,
-        context: RequestContext,
-        event_queue: EventQueue
-    ):
+    async def execute(self, context: RequestContext, event_queue: EventQueue):
         task_id = context.task_id
-        user_text = context.message.parts[0].text
+        user_message = context.message.parts[0].text
 
-        # Get or create session for this task
+        # Create or retrieve ADK session for this A2A task
         if task_id not in self.sessions:
             self.sessions[task_id] = Session(session_id=task_id)
 
-        session = self.sessions[task_id]
-
-        # Run agent with session context
+        # Run agent with session
         response = await self.agent.arun(
-            input=user_text,
-            session=session
+            input=user_message,
+            session=self.sessions[task_id]
         )
 
         # Send response
-        message = Message(
+        await event_queue.put(Message(
             role="agent",
             parts=[Part(type="text", text=response.text)]
-        )
-        await event_queue.put(message)
+        ))
 
-        # Complete task
-        task = Task(id=task_id, status="completed")
-        await event_queue.put(task)
+        await event_queue.put(Task(id=task_id, status="completed"))
 
-    async def cancel(
-        self,
-        context: RequestContext,
-        event_queue: EventQueue
-    ):
-        # Clean up session
+    async def cancel(self, context: RequestContext, event_queue: EventQueue):
+        # Clean up session on cancel
         if context.task_id in self.sessions:
             del self.sessions[context.task_id]
 
-        task = Task(id=context.task_id, status="cancelled")
-        await event_queue.put(task)
-```
-
-## Multi-Agent System: ADK Sub-Agents via A2A
-
-Expose a hierarchical ADK multi-agent system via A2A:
-
-```python
-from google.adk.agents import LlmAgent
-from google.adk.tools import google_search
+        await event_queue.put(Task(id=context.task_id, status="cancelled"))
 
 
-# Define specialized sub-agents
-research_agent = LlmAgent(
-    name="researcher",
-    model="gemini-2.5-flash",
-    instruction="Research topics using Google Search and provide comprehensive information.",
-    description="Handles research tasks",
-    tools=[google_search]
+# Create conversational agent
+chatbot = LlmAgent(
+    name="chatbot",
+    model="gemini-3-flash-preview",
+    instruction="You are a friendly conversational assistant. Remember context from previous messages."
 )
 
-writer_agent = LlmAgent(
-    name="writer",
-    model="gemini-2.5-pro",
-    instruction="Write high-quality content based on provided information.",
-    description="Handles writing tasks"
-)
-
-# Create coordinator agent with sub-agents
-coordinator = LlmAgent(
-    name="coordinator",
-    model="gemini-2.5-flash",
-    instruction="""You coordinate between research and writing tasks.
-    - Use the researcher for finding information
-    - Use the writer for creating content
-    - Combine their outputs to provide complete responses""",
-    description="Coordinates research and writing sub-agents",
-    sub_agents=[research_agent, writer_agent]
-)
-
-# Expose coordinator via A2A
-# The A2A clients don't need to know about the sub-agents
+# Expose with conversation support
 server = A2AServer(
-    agent_executor=ADKExecutor(coordinator),
-    agent_name="Research & Writing Assistant",
-    agent_description="Multi-agent system that researches and writes content",
+    agent_executor=ConversationalExecutor(chatbot),
+    agent_name="Conversational Assistant",
+    agent_description="Chatbot that maintains conversation history",
+    agent_capabilities={"multiTurn": True, "streaming": True},
     port=9999
 )
 ```
 
-## Error Handling
+## Structured Output via A2A
 
-Robust error handling when combining ADK and A2A:
+Return structured data from ADK agents:
 
 ```python
-from a2a.types import A2AError
+from pydantic import BaseModel
+from a2a.types import Part
 
 
-class RobustADKExecutor(AgentExecutor):
-    """ADK executor with comprehensive error handling."""
+class AnalysisResult(BaseModel):
+    """Structured analysis result."""
+    summary: str
+    sentiment: str
+    key_points: list[str]
+    confidence: float
+
+
+class StructuredExecutor(AgentExecutor):
+    """ADK executor that returns structured output."""
 
     def __init__(self, adk_agent: LlmAgent):
         self.agent = adk_agent
 
-    async def execute(
-        self,
-        context: RequestContext,
-        event_queue: EventQueue
-    ):
-        try:
-            user_text = context.message.parts[0].text
+    async def execute(self, context: RequestContext, event_queue: EventQueue):
+        user_message = context.message.parts[0].text
 
-            # Run ADK agent with timeout
-            response = await asyncio.wait_for(
-                self.agent.arun(input=user_text),
-                timeout=60.0  # 60 second timeout
-            )
+        # Run ADK agent with structured output
+        response = await self.agent.arun(input=user_message)
 
-            # Send response
-            message = Message(
-                role="agent",
-                parts=[Part(type="text", text=response.text)]
-            )
-            await event_queue.put(message)
+        # Parse response to structured format (if using response_model)
+        # Or format the text response as JSON
+        result = {
+            "summary": response.text,
+            "type": "analysis",
+            "timestamp": "2024-01-01T00:00:00Z"
+        }
 
-            # Complete task
-            task = Task(id=context.task_id, status="completed")
-            await event_queue.put(task)
+        # Send as data part
+        await event_queue.put(Message(
+            role="agent",
+            parts=[
+                Part(type="text", text=response.text),
+                Part(type="data", data=result)
+            ]
+        ))
 
-        except asyncio.TimeoutError:
-            # Handle timeout
-            error = A2AError(
-                code="timeout_error",
-                message="Agent execution timed out after 60 seconds"
-            )
-            await event_queue.put(error)
+        await event_queue.put(Task(id=context.task_id, status="completed"))
 
-            task = Task(id=context.task_id, status="failed")
-            await event_queue.put(task)
+    async def cancel(self, context: RequestContext, event_queue: EventQueue):
+        await event_queue.put(Task(id=context.task_id, status="cancelled"))
 
-        except Exception as e:
-            # Handle other errors
-            error = A2AError(
-                code="execution_error",
-                message=f"Agent execution failed: {str(e)}"
-            )
-            await event_queue.put(error)
 
-            task = Task(id=context.task_id, status="failed")
-            await event_queue.put(task)
+# Create agent with structured output
+analyzer = LlmAgent(
+    name="analyzer",
+    model="gemini-3-flash-preview",
+    instruction="Analyze text and provide structured insights.",
+    response_model=AnalysisResult  # Optional: enforce structure
+)
 
-    async def cancel(
-        self,
-        context: RequestContext,
-        event_queue: EventQueue
-    ):
-        task = Task(id=context.task_id, status="cancelled")
-        await event_queue.put(task)
+server = A2AServer(
+    agent_executor=StructuredExecutor(analyzer),
+    agent_name="Text Analyzer",
+    agent_description="Returns structured analysis with sentiment and key points"
+)
 ```
 
-## Testing Your A2A-Enabled ADK Agent
+## Multi-Agent Ecosystem
 
-Test the agent using an A2A client:
+Create a distributed multi-agent system where ADK agents communicate via A2A:
 
 ```python
-import httpx
-from uuid import uuid4
-from a2a.client import A2AClient
-from a2a.types import MessageSendParams, SendMessageRequest
+# Agent 1: Research Agent (Port 9001)
+research_agent = LlmAgent(
+    name="researcher",
+    model="gemini-3-flash-preview",
+    instruction="Research topics using Google Search.",
+    tools=[google_search]
+)
 
+server1 = A2AServer(
+    agent_executor=ADKAgentExecutor(research_agent),
+    agent_name="Research Agent",
+    agent_description="Researches topics",
+    port=9001
+)
 
-async def test_adk_a2a_agent():
-    """Test ADK agent exposed via A2A."""
-    async with httpx.AsyncClient() as httpx_client:
-        # Connect to A2A server
-        client = await A2AClient.get_client_from_agent_card_url(
-            httpx_client,
-            "http://localhost:9999"
-        )
+# Agent 2: Writing Agent (Port 9002)
+writer_agent = LlmAgent(
+    name="writer",
+    model="gemini-3-pro-preview",
+    instruction="Write high-quality content.",
+    description="Writes content"
+)
 
-        # Fetch agent card
-        response = await httpx_client.get("http://localhost:9999/.well-known/agent.json")
-        agent_card = response.json()
-        print(f"Agent: {agent_card['name']}")
-        print(f"Description: {agent_card['description']}")
+server2 = A2AServer(
+    agent_executor=ADKAgentExecutor(writer_agent),
+    agent_name="Writing Agent",
+    agent_description="Writes content",
+    port=9002
+)
 
-        # Send test requests
-        test_queries = [
-            "What is the weather in Paris?",
-            "Search for recent news about AI",
-            "Calculate 15 * 24"
-        ]
+# Agent 3: Coordinator (Port 9003)
+# This agent can discover and call other A2A agents
+class CoordinatorExecutor(AgentExecutor):
+    async def execute(self, context: RequestContext, event_queue: EventQueue):
+        user_message = context.message.parts[0].text
 
-        for query in test_queries:
-            request = SendMessageRequest(
-                params=MessageSendParams(
-                    message={
-                        "role": "user",
-                        "parts": [{"type": "text", "text": query}],
-                        "messageId": uuid4().hex
-                    }
-                )
+        # Call research agent via A2A
+        async with httpx.AsyncClient() as client:
+            research_client = await A2AClient.get_client_from_agent_card_url(
+                client, "http://localhost:9001"
             )
+            research_response = await research_client.send_message(...)
 
-            response = await client.send_message(request)
-            print(f"\nQuery: {query}")
-            print(f"Response: {response.model_dump(mode='json', exclude_none=True)}")
+            # Call writing agent via A2A with research results
+            writer_client = await A2AClient.get_client_from_agent_card_url(
+                client, "http://localhost:9002"
+            )
+            final_response = await writer_client.send_message(...)
 
-
-# Run test
-asyncio.run(test_adk_a2a_agent())
+        # Send final response
+        await event_queue.put(Message(
+            role="agent",
+            parts=[Part(type="text", text=final_response.text)]
+        ))
+        await event_queue.put(Task(id=context.task_id, status="completed"))
 ```
 
-## Deployment to Vertex AI Agent Engine
+## Error Handling
 
-Deploy your ADK+A2A agent to production:
+Handle ADK errors and communicate via A2A protocol:
+
+```python
+from a2a.types import A2AError
+from google.api_core import exceptions
+
+
+class RobustExecutor(AgentExecutor):
+    def __init__(self, adk_agent: LlmAgent):
+        self.agent = adk_agent
+
+    async def execute(self, context: RequestContext, event_queue: EventQueue):
+        try:
+            user_message = context.message.parts[0].text
+
+            # Run with timeout
+            response = await asyncio.wait_for(
+                self.agent.arun(input=user_message),
+                timeout=60.0
+            )
+
+            await event_queue.put(Message(
+                role="agent",
+                parts=[Part(type="text", text=response.text)]
+            ))
+            await event_queue.put(Task(id=context.task_id, status="completed"))
+
+        except asyncio.TimeoutError:
+            await event_queue.put(A2AError(
+                code="timeout",
+                message="Agent execution timed out"
+            ))
+            await event_queue.put(Task(id=context.task_id, status="failed"))
+
+        except exceptions.ResourceExhausted:
+            await event_queue.put(A2AError(
+                code="quota_exceeded",
+                message="API quota exceeded"
+            ))
+            await event_queue.put(Task(id=context.task_id, status="failed"))
+
+        except Exception as e:
+            await event_queue.put(A2AError(
+                code="execution_error",
+                message=f"Agent failed: {str(e)}"
+            ))
+            await event_queue.put(Task(id=context.task_id, status="failed"))
+
+    async def cancel(self, context: RequestContext, event_queue: EventQueue):
+        await event_queue.put(Task(id=context.task_id, status="cancelled"))
+```
+
+## Deployment
+
+Deploy ADK+A2A agents to production:
+
+### Local Development
+
+```bash
+# Install dependencies
+pip install google-adk a2a-sdk[http-server]
+
+# Run A2A server
+python my_agent.py
+```
+
+### Cloud Run Deployment
+
+```python
+# Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD ["python", "agent_server.py"]
+```
+
+```bash
+# Deploy to Cloud Run
+gcloud run deploy adk-a2a-agent \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated
+```
+
+### Vertex AI Agent Engine
 
 ```python
 from google.cloud import aiplatform
@@ -452,64 +516,84 @@ from google import genai
 
 # Create ADK agent
 agent = LlmAgent(
-    name="production_agent",
-    model="gemini-2.5-flash",
-    instruction="Production agent with A2A support",
+    name="production_assistant",
+    model="gemini-3-flash-preview",
+    instruction="Production ADK agent",
     tools=[google_search]
 )
 
-# Deploy to Vertex AI Agent Engine
-aiplatform.init(project="your-project-id", location="us-central1")
+# Deploy to Agent Engine
+aiplatform.init(project="your-project", location="us-central1")
 client = genai.Client(vertexai=True)
 
 remote_agent = client.agent_engines.create(
     agent,
-    config={
-        "requirements": [
-            "google-adk",
-            "a2a-sdk[http-server]",
-            "google-cloud-aiplatform[agent_engines]"
-        ],
-    },
+    config={"requirements": ["google-adk", "a2a-sdk"]}
 )
 
-print(f"Agent deployed: {remote_agent.resource_name}")
+# Can be wrapped with A2A server for external communication
+```
 
-# The deployed agent can be wrapped with A2A server in the deployment
-# See vertex-agent-engine skill for deployment details
+## Testing A2A-Enabled ADK Agents
+
+```python
+import httpx
+from uuid import uuid4
+from a2a.client import A2AClient
+from a2a.types import SendMessageRequest, MessageSendParams
+
+
+async def test_agent():
+    async with httpx.AsyncClient() as client:
+        # Connect to A2A server
+        a2a_client = await A2AClient.get_client_from_agent_card_url(
+            client, "http://localhost:9999"
+        )
+
+        # Test query
+        request = SendMessageRequest(
+            params=MessageSendParams(
+                message={
+                    "role": "user",
+                    "parts": [{"type": "text", "text": "Search for latest AI news"}],
+                    "messageId": uuid4().hex
+                }
+            )
+        )
+
+        response = await a2a_client.send_message(request)
+        print(response.model_dump(mode="json"))
+
+asyncio.run(test_agent())
 ```
 
 ## Best Practices
 
-1. **Session Management**: Use ADK sessions for multi-turn conversations mapped to A2A task IDs
-2. **Error Handling**: Always wrap ADK calls in try/except and send A2A errors appropriately
-3. **Streaming**: Use ADK streaming for better user experience with long responses
-4. **Tool Selection**: Choose appropriate ADK tools based on your agent's capabilities
-5. **Agent Cards**: Populate A2A agent capabilities based on ADK agent's tools
-6. **Testing**: Test locally with both ADK's dev UI and A2A clients before deployment
-7. **Timeouts**: Set reasonable timeouts for tool calls and overall execution
-8. **Logging**: Log both ADK and A2A events for debugging
+1. **Session Mapping**: Map A2A task IDs to ADK sessions for conversation continuity
+2. **Tool Transparency**: Document ADK tools in A2A agent capabilities
+3. **Error Propagation**: Convert ADK exceptions to appropriate A2A errors
+4. **Streaming**: Enable streaming for long-running ADK operations
+5. **Timeouts**: Set reasonable timeouts for tool execution
+6. **Testing**: Test with both ADK dev UI and A2A clients
+7. **Documentation**: Keep Agent Card in sync with actual capabilities
+8. **Monitoring**: Log both ADK events and A2A protocol events
 
-## Common Patterns
+## Architecture Patterns
 
-### Pattern 1: Simple Tool Agent
-ADK agent with 1-2 tools exposed via A2A for external consumption
+### Pattern 1: Single ADK Agent via A2A
+Simple exposure of one ADK agent as an A2A service
 
-### Pattern 2: Research Assistant
-ADK agent with search + code execution + custom tools via A2A
+### Pattern 2: ADK Multi-Agent Behind A2A
+ADK coordinator with sub-agents, single A2A endpoint
 
-### Pattern 3: Multi-Agent Router
-ADK coordinator with sub-agents, all hidden behind single A2A endpoint
+### Pattern 3: Distributed ADK Agents
+Multiple ADK agents, each with A2A endpoint, communicating via A2A
 
-### Pattern 4: Conversational Agent
-ADK session-based agent maintaining context through A2A task lifecycle
-
-### Pattern 5: Distributed System
-Multiple ADK agents, each exposed via A2A, communicating via A2A protocol
+### Pattern 4: Hybrid System
+Some agents use ADK sub-agents (internal), some use A2A (cross-service)
 
 ## See Also
 
-- **[google-adk](../../google-adk/SKILL.md)** - ADK documentation and agent building patterns
-- **[vertex-agent-engine](../../vertex-agent-engine/SKILL.md)** - Deploy to production
-- **[server-setup.md](server-setup.md)** - Advanced A2A server configuration
-- **[multi-turn.md](multi-turn.md)** - Conversation management patterns
+- **[google-adk](../../google-adk/SKILL.md)** - Google ADK documentation
+- **[google-adk/agents.md](../../google-adk/references/agents.md)** - ADK agent patterns
+- **[google-adk/deployment.md](../../google-adk/references/deployment.md)** - ADK deployment strategies
