@@ -1,0 +1,22 @@
+{
+  "name": "google-adk-skills",
+  "owner": {
+    "name": "Boris Tvaroska",
+    "email": "tvaroska@google.com"
+  },
+  "metadata": {
+    "description": "Skills to develop and deploy Google-ADK agents",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "google-adk",
+      "description": "Skill to create and test ADK agents",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./googl-adk",
+      ]
+    }
+ ]
+}
