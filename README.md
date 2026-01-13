@@ -67,7 +67,7 @@ You can register this repository as a Claude Code Plugin marketplace by running 
 /plugin marketplace add jbrache/skills
 
 # Remove When Done
-/plugin marketplace remove google-adk-skills
+/plugin marketplace remove jbrache-agent-skills
 ```
 
 Then, to install a specific set of skills:
@@ -89,7 +89,7 @@ Alternatively, directly [install locally](https://code.claude.com/docs/en/discov
 
 After installing the plugin, you can use the ADK skill by just mentioning it. For instance, you can ask Claude Code to do something like: 
 ```
-Use the google-adk-skills skill to build portfolio news agent - first get portfolio from the tool. For now just fixed GOOGL and NVDA (pick number of stock) 2.execute search to find news from last week 3. create one paragraph summary of impact on the portfolio
+Use the google-adk-skills:google-adk-dev skill to build portfolio news agent - first get portfolio from the tool. For now just fixed GOOGL and NVDA (pick number of stock) 2.execute search to find news from last week 3. create one paragraph summary of impact on the portfolio
 ```
 
 ## Claude.ai
