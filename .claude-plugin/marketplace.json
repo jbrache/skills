@@ -1,8 +1,8 @@
 {
   "name": "google-adk-skills",
   "owner": {
-    "name": "Boris Tvaroska",
-    "email": "tvaroska@google.com"
+    "name": "Jose Brache",
+    "email": "jbrache@google.com"
   },
   "metadata": {
     "description": "Skills to develop and deploy Google-ADK agents",
@@ -10,12 +10,12 @@
   },
   "plugins": [
     {
-      "name": "google-adk",
+      "name": "google-adk-agent",
       "description": "Skill to create and test ADK agents",
       "source": "./",
       "strict": false,
       "skills": [
-        "./google-adk"
+        "./google-adk-agent"
       ]
     }
  ]
