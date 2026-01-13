@@ -125,6 +125,11 @@ Will think about building the ultimate Claude Code ADK Agent with context on the
 
 This way there's the trifecta 🔱 of **Cloud Skills + Docs MCP + Code MCP**, it's a lot but may be more useful in edge cases with the ADK CLI, where there's situations of missing context.
 
+## Prior Art
+
+* [Simplify your Agent "vibe building" flow with ADK and Gemini CLI](https://developers.googleblog.com/en/simplify-agent-building-adk-gemini-cli/)
+* [ADK Docs Extension for Gemini CLI](https://github.com/derailed-dash/adk-docs-ext/tree/main)
+
 ## 📝 License
 
 Copyright 2025 Google LLC
