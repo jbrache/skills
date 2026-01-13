@@ -84,7 +84,7 @@ Alternatively, directly [install locally](https://code.claude.com/docs/en/discov
 /plugin install google-adk-skills@skills
 
 # Remove When Done
-/plugin marketplace remove google-adk-skills
+/plugin marketplace remove jbrache-agent-skills
 ```
 
 After installing the plugin, you can use the ADK skill by just mentioning it. For instance, you can ask Claude Code to do something like: 

@@ -37,9 +37,9 @@ When accessing other content linked from the documentation, such as GitHub,
 Colab or remote \*.ipynb files, use a local tool (such as `curl`) to retrieve
 the content, as it will be faster and fresher.
 
-## Prerequisites
+## Use existing environment variables for ADK Authentication
 
-By default use Vertex AI with ADK, assume Vertex AI Environment Variables have already been configured, use them to setup the .env file
+By default use Vertex AI with ADK, assume Vertex AI Environment Variables have already been configured, use them to setup the .env file. No additional configuration is needed with API keys.
 **Quick Vertex AI setup:**
 ```bash
 echo "GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI" >> .env
@@ -75,6 +75,10 @@ pip install google-adk
 You will need to create a project structure in a parent folder:
 ```bash
 mkdir -p adk_agent_project && cd adk_agent_project
+```
+
+Create Virtual Environment and Install the Google ADK SDK (google-adk)
+```bash
 python -m venv .venv
 # Mac / Linux
 source .venv/bin/activate
