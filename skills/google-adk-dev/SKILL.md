@@ -28,10 +28,7 @@ as the best practices change regularly.
 
 The `adk-docs-mcp:fetch_docs` tool will help you find the correct package and SDK, and best practices for writing code with the ADK.
 
-If the `deepwiki` MCP Server is available, use this repo: `https://github.com/google/adk-python` for queries. The DeepWiki MCP server provides programmatic access to powerful context-gathering and question-answering tools for all GitHub repos indexed on DeepWiki.com. The DeepWiki MCP server offers three main tools::
-1. `deepwiki:ask_question` - Ask any question about a GitHub repository and get an AI-powered, context-grounded response
-2. `deepwiki:read_wiki_contents` - View documentation about a GitHub repository
-3. `deepwiki:read_wiki_structure` - Ask any question about a GitHub repository and get an AI-powered, context-grounded response
+If the `deepwiki` MCP Server is available, use this repo: `https://github.com/google/adk-python` for queries. The DeepWiki MCP server provides programmatic access to powerful context-gathering and question-answering tools for all GitHub repos indexed on DeepWiki.com. See `references/deepwiki.md` for how to use the DeepWiki MCP server.
 
 **IMPORTANT**: Any time you answer a question about the ADK **without** using
 `adk-docs-mcp:fetch_docs` or `deepwiki` (if available) , it causes **pain** to the user.
