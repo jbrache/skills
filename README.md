@@ -56,6 +56,11 @@ export GOOGLE_CLOUD_LOCATION=global
 export GOOGLE_GENAI_USE_VERTEXAI=TRUE
 ```
 
+To add an MCP server for the [ADK docs to Claude Code](https://google.github.io/adk-docs/tutorials/coding-with-ai/#claude-code), run the following command:
+```bash
+claude mcp add adk-docs --scope user --transport stdio -- uvx --from mcpdoc mcpdoc --urls AgentDevelopmentKit:https://google.github.io/adk-docs/llms.txt --transport stdio
+```
+
 ## Claude Code
 You can register this repository as a Claude Code Plugin marketplace by running the following command in Claude Code:
 ```
