@@ -127,8 +127,8 @@ root_agent = LlmAgent(
 
 Run your agent using the `adk run` command-line tool and chat.
 ```bash
+# Chat directly with the agent with the CLI tool
 adk run weather_agent
-# Opens http://localhost:8080 - select your agent and chat
 
 # Or use replay file
 adk run weather_agent --replay test.json
