@@ -1,5 +1,5 @@
 ---
-name: google-adk-agent
+name: google-adk-dev
 description: "Build AI agents, chatbots, and autonomous assistants with tools, memory, and multi-agent systems using Python. Use when: (1) Creating agents/chatbots/assistants that use tools (Google Search, APIs, custom functions, databases), (2) Building multi-agent systems with specialized agents that collaborate, (3) Agents that remember conversation history or maintain state, (4) Deploying agents to Cloud Run, Vertex AI Agent Engine, or GKE, (5) Evaluating agent performance with test sets, (6) User mentions 'agent', 'chatbot', 'assistant', 'autonomous', 'multi-agent', 'ADK', or 'agentic'."
 ---
 
@@ -39,50 +39,34 @@ the content, as it will be faster and fresher.
 
 ## Use existing environment variables for ADK Authentication
 
-By default use Vertex AI with ADK, assume Vertex AI Environment Variables have already been configured, use them to setup the .env file. No additional configuration is needed with API keys.
+By default use Vertex AI with ADK. Assume Vertex AI Environment Variables have already been configured, use them to setup the .env file. No additional configuration is needed with API keys.
+
 **Quick Vertex AI setup:**
 ```bash
+echo "GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT" >> .env
 echo "GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI" >> .env
-echo "GOOGLE_CLOUD_LOCATION=$GOOGLE_GENAI_USE_VERTEXAI" >> .env
+echo "GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION" >> .env
 ```
 
-**Create & activate virtual environment**
-We recommend creating a virtual Python environment using venv:
+**Create & activate virtual environment:**
 ```bash
 python -m venv .venv
-```
-
-You can activate the virtual environment using the appropriate command for your operating system and environment:
-```bash
 # Mac / Linux
 source .venv/bin/activate
-
-# Windows CMD:
-.venv\Scripts\activate.bat
-
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
+# Windows CMD: .venv\Scripts\activate.bat
+# Windows PowerShell: .venv\Scripts\Activate.ps1
 ```
 
-Install ADK:
+**Install ADK:**
 ```bash
 pip install google-adk
 ```
 
 ## Quick Start
 
-### 1. Create Project
-You will need to create a project structure in a parent folder:
+### 1. Create Project Structure
 ```bash
 mkdir -p adk_agent_project && cd adk_agent_project
-```
-
-Create Virtual Environment and Install the Google ADK SDK (google-adk)
-```bash
-python -m venv .venv
-# Mac / Linux
-source .venv/bin/activate
-pip install google-adk
 ```
 
 ### 2. Create Your Agent
