@@ -48,7 +48,7 @@ echo "GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI" >> .env
 echo "GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION" >> .env
 ```
 
-**Create Agent Project Structure:**
+**Create agent project directory:** (i.e. for weather_agent project)
 ```bash
 mkdir -p weather_agent && cd weather_agent
 ```
@@ -71,7 +71,7 @@ pip install google-adk
 
 ### 1. Create Your Agent
 
-Run the `adk create` command to start a new agent project.
+Run the `adk create` command to start a new agent project in the agent project directory, i.e. `/weather_agent`.
 ```bash
 adk create weather_agent
 ```
