@@ -1,5 +1,3 @@
-> **Note:** This repository contains Anthropic's implementation of skills for Claude. For information about the Agent Skills standard, see [agentskills.io](http://agentskills.io).
-
 # Skills
 Skills are folders of instructions, scripts, and resources that Claude loads dynamically to improve performance on specialized tasks. Skills teach Claude how to complete specific tasks in a repeatable way, whether that's creating documents with your company's brand guidelines, analyzing data using your organization's specific workflows, or automating personal tasks.
 
@@ -15,7 +13,19 @@ This repository contains skills that demonstrate what's possible with Claude's s
 
 Each skill is self-contained in its own folder with a `SKILL.md` file containing the instructions and metadata that Claude uses. Browse through these skills to get inspiration for your own skills or to understand different patterns and approaches.
 
-Many skills in this repo are open source (Apache 2.0). We've also included the document creation & editing skills that power [Claude's document capabilities](https://www.anthropic.com/news/create-files) under the hood in the [`skills/docx`](./skills/docx), [`skills/pdf`](./skills/pdf), [`skills/pptx`](./skills/pptx), and [`skills/xlsx`](./skills/xlsx) subfolders. These are source-available, not open source, but we wanted to share these with developers as a reference for more complex skills that are actively used in a production AI application.
+## How It Works
+
+This skills use the [MCP LLMS-TXT Doc Server](https://pypi.org/project/mcpdoc/) to provide the Claude model with up-to-date information about ADK. The documentation content is sourced from the `llms.txt` file in the [official ADK-Docs](https://github.com/google/adk-docs). This file is effectively a sitemap of the ADK documentation.
+
+Each skills `SKILL.md` file provides instructions to the Claude model, guiding it to use the tools provided by this MCP Server when answering questions about ADK.
+
+## Why Is This Useful?
+
+This extension empowers Claude CLI to provide accurate and current information about ADK, without relying on potentially outdated internal knowledge. This is particularly useful for:
+
+*   Answering questions about ADK's features and APIs.
+*   Assisting with development tasks related to ADK.
+*   Ensuring that the information provided by the Claude CLI is consistent with the latest ADK documentation.
 
 ## Disclaimer
 
@@ -23,35 +33,57 @@ Many skills in this repo are open source (Apache 2.0). We've also included the d
 
 # Skill Sets
 - [./skills](./skills): Skill examples for Creative & Design, Development & Technical, Enterprise & Communication, and Document Skills
-- [./spec](./spec): The Agent Skills specification
-- [./template](./template): Skill template
 
 # Try in Claude Code, Claude.ai, and the API
+
+
+```
+# Set your PROJECT_ID
+export PROJECT_ID=<project id>
+
+# Clone Locally if you want to add ADK skill to Claude Code
+git clone https://github.com/jbrache/skills.git
+
+# Setup application default credentials
+gcloud auth application-default login
+gcloud config set project $PROJECT_ID
+
+# Set up environment variables to use Vertex AI models:
+export CLAUDE_CODE_USE_VERTEX=1
+export CLOUD_ML_REGION=global
+export ANTHROPIC_VERTEX_PROJECT_ID=$PROJECT_ID
+```
 
 ## Claude Code
 You can register this repository as a Claude Code Plugin marketplace by running the following command in Claude Code:
 ```
-/plugin marketplace add anthropics/skills
 /plugin marketplace add jbrache/skills
+
+# Remove When Done
+/plugin marketplace remove google-adk-skills
 ```
 
 Then, to install a specific set of skills:
 1. Select `Browse and install plugins`
-2. Select `anthropic-agent-skills`
-3. Select `document-skills` or `example-skills`
+2. Select `jbrache-agent-skills`
+3. Select `google-adk-skills`
 4. Select `Install now`
 
-Alternatively, directly install either Plugin via:
+Alternatively, directly [install locally](https://code.claude.com/docs/en/discover-plugins#add-from-local-paths):
 ```
-/plugin install document-skills@anthropic-agent-skills
-/plugin install example-skills@anthropic-agent-skills
+/plugin marketplace add ./skills
+/plugin install google-adk-skills@skills
+
+# Remove When Done
+/plugin marketplace remove google-adk-skills
 ```
 
-After installing the plugin, you can use the skill by just mentioning it. For instance, if you install the `document-skills` plugin from the marketplace, you can ask Claude Code to do something like: "Use the PDF skill to extract the form fields from `path/to/some-file.pdf`"
+After installing the plugin, you can use the ADK skill by just mentioning it. For instance, you can ask Claude Code to do something like: 
+```
+Use the google-adk-dev skill to build portfolio news agent - first get portfolio from the tool. For now just fixed GOOGL and NVDA (pick number of stock) 2.execute search to find news from last week 3. create one paragraph summary of impact on the portfolio
+```
 
 ## Claude.ai
-
-These example skills are all already available to paid plans in Claude.ai. 
 
 To use any skill from this repository or upload custom skills, follow the instructions in [Using skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude#h_a4222fa77b).
 
@@ -59,37 +91,12 @@ To use any skill from this repository or upload custom skills, follow the instru
 
 You can use Anthropic's pre-built skills, and upload custom skills, via the Claude API. See the [Skills API Quickstart](https://docs.claude.com/en/api/skills-guide#creating-a-skill) for more.
 
-# Creating a Basic Skill
+## 📝 License
 
-Skills are simple to create - just a folder with a `SKILL.md` file containing YAML frontmatter and instructions. You can use the **template-skill** in this repository as a starting point:
+Copyright 2025 Google LLC
 
-```markdown
----
-name: my-skill-name
-description: A clear description of what this skill does and when to use it
----
+Licensed under the Apache License, Version 2.0. See LICENSE file for details.
 
-# My Skill Name
+## Disclaimer
 
-[Add your instructions here that Claude will follow when this skill is active]
-
-## Examples
-- Example usage 1
-- Example usage 2
-
-## Guidelines
-- Guideline 1
-- Guideline 2
-```
-
-The frontmatter requires only two fields:
-- `name` - A unique identifier for your skill (lowercase, hyphens for spaces)
-- `description` - A complete description of what the skill does and when to use it
-
-The markdown content below contains the instructions, examples, and guidelines that Claude will follow. For more details, see [How to create custom skills](https://support.claude.com/en/articles/12512198-creating-custom-skills).
-
-# Partner Skills
-
-Skills are a great way to teach Claude how to get better at using specific pieces of software. As we see awesome example skills from partners, we may highlight some of them here:
-
-- **Notion** - [Notion Skills for Claude](https://www.notion.so/notiondevs/Notion-Skills-for-Claude-28da4445d27180c7af1df7d8615723d0)
+This repository itself is not an officially supported Google product. The code in this repository is for demonstrative purposes only.

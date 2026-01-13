@@ -5,7 +5,7 @@ description: "Build AI agents, chatbots, and autonomous assistants with tools, m
 
 # Google Agent Development Kit (ADK) Guide
 
-This skill provides guidelines using a code-first Python framework for building, evaluating, and deploying AI agents.
+This skill provides guidelines for building, evaluating, and deploying AI agents with Google Agent Development Kit (ADK) in Python.
 
 ## Key Features
 
@@ -72,9 +72,9 @@ pip install google-adk
 ## Quick Start
 
 ### 1. Create Project
-
+You will need to create a project structure in a parent folder:
 ```bash
-mkdir -p weather/weather-agent && cd weather
+mkdir -p weather_agent_project && cd weather_agent_project
 python -m venv .venv
 # Mac / Linux
 source .venv/bin/activate
@@ -83,22 +83,23 @@ pip install google-adk
 
 ### 2. Create Your Agent
 
-Run the adk create command to start a new agent project.
+Run the `adk create` command to start a new agent project.
 ```bash
-adk create weather-agent
+adk create weather_agent
 ```
 
 The created agent project has the following structure, with the agent.py file containing the main control code for the agent.
 
 ```
-weather-agent/
-    agent.py      # main agent code
-    .env          # API keys or project IDs
-    __init__.py
+weather_agent_project/
+    weather_agent/
+        agent.py      # main agent code
+        .env          # API keys or project IDs
+        __init__.py
 ```
 
 ```python
-# weather-agent/agent.py
+# weather_agent/agent.py
 from google.adk.agents import LlmAgent
 
 def get_weather(location: str) -> str:
@@ -126,11 +127,11 @@ root_agent = LlmAgent(
 
 Run your agent using the `adk run` command-line tool and chat.
 ```bash
-adk run weather-agent
+adk run weather_agent
 # Opens http://localhost:8080 - select your agent and chat
 
 # Or use replay file
-adk run weather-agent --replay test.json
+adk run weather_agent --replay test.json
 ```
 
 ---

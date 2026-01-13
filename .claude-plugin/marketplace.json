@@ -1,5 +1,5 @@
 {
-  "name": "google-adk-skills",
+  "name": "jbrache-agent-skills",
   "owner": {
     "name": "Jose Brache",
     "email": "jbrache@google.com"
@@ -10,12 +10,12 @@
   },
   "plugins": [
     {
-      "name": "google-adk-agent",
+      "name": "google-adk-skills",
       "description": "Skill to create and test ADK agents",
       "source": "./",
       "strict": false,
       "skills": [
-        "./google-adk-agent"
+        "./google-adk-dev"
       ]
     }
  ]
