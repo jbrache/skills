@@ -34,12 +34,15 @@ This extension empowers Claude CLI to provide accurate and current information a
 
 # Try in Claude Code, Claude.ai, and the API
 
+## Prerequisites
+
+### Step 1. Set Environment Variables, Credentials
 ```bash
 # Set your PROJECT_ID
 export PROJECT_ID=<project id>
 
 # Clone Locally if you want to add ADK skill to Claude Code
-git clone https://github.com/jbrache/skills.git
+# git clone https://github.com/jbrache/skills.git
 
 # Setup application default credentials
 gcloud auth application-default login
@@ -56,6 +59,7 @@ export GOOGLE_CLOUD_LOCATION=global
 export GOOGLE_GENAI_USE_VERTEXAI=TRUE
 ```
 
+### Step 2. Add MCP server for the ADK docs to Claude Code
 To add an MCP server for the [ADK docs to Claude Code](https://google.github.io/adk-docs/tutorials/coding-with-ai/#claude-code), run the following command:
 ```bash
 claude mcp add adk-docs --scope user --transport stdio -- uvx --from mcpdoc mcpdoc --urls AgentDevelopmentKit:https://google.github.io/adk-docs/llms.txt --transport stdio
@@ -63,7 +67,13 @@ claude mcp add adk-docs --scope user --transport stdio -- uvx --from mcpdoc mcpd
 
 ## Claude Code
 You can register this repository as a Claude Code Plugin marketplace by running the following command in Claude Code:
-```
+```bash
+# Launch Claude
+claude
+
+# ----------------------------------------
+# Claude CLI Commands
+# ----------------------------------------
 /plugin marketplace add jbrache/skills
 
 # Remove When Done
@@ -79,7 +89,16 @@ Then, to install a specific set of skills:
 Restart Claude Code to apply changes.
 
 Alternatively, directly [install locally](https://code.claude.com/docs/en/discover-plugins#add-from-local-paths):
-```
+```bash
+# Clone Locally if you want to add ADK skill to Claude Code
+git clone https://github.com/jbrache/skills.git
+
+# Launch Claude
+claude
+
+# ----------------------------------------
+# Claude CLI Commands
+# ----------------------------------------
 /plugin marketplace add ./skills
 /plugin install google-adk-skills@skills
 
