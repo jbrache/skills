@@ -39,7 +39,7 @@ the content, as it will be faster and fresher.
 
 ## Prerequisites
 
-Vertex AI Environment Variables have already been configured, use them to setup the .env file
+By default use Vertex AI with ADK, assume Vertex AI Environment Variables have already been configured, use them to setup the .env file
 **Quick Vertex AI setup:**
 ```bash
 echo "GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI" >> .env
