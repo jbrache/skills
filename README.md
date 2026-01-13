@@ -9,9 +9,7 @@ For more information, check out:
 
 # About This Repository
 
-This repository contains skills that demonstrate what's possible with Claude's skills system. These skills range from creative applications (art, music, design) to technical tasks (testing web apps, MCP server generation) to enterprise workflows (communications, branding, etc.).
-
-Each skill is self-contained in its own folder with a `SKILL.md` file containing the instructions and metadata that Claude uses. Browse through these skills to get inspiration for your own skills or to understand different patterns and approaches.
+The Google Agent Development Kit (ADK) skill streamlines the entire lifecycle of building ADK applications, from initial scaffolding to verification against best practices. It helps you quickly start new projects with the latest SDK versions and ensures your applications follow official documentation patterns.
 
 ## How It Works
 
@@ -32,12 +30,11 @@ This extension empowers Claude CLI to provide accurate and current information a
 **These skills are provided for demonstration and educational purposes only.** While some of these capabilities may be available in Claude, the implementations and behaviors you receive from Claude may differ from what is shown in these skills. These skills are meant to illustrate patterns and possibilities. Always test skills thoroughly in your own environment before relying on them for critical tasks.
 
 # Skill Sets
-- [./skills](./skills): Skill examples for Creative & Design, Development & Technical, Enterprise & Communication, and Document Skills
+- [./skills](./skills): Skill examples for creating and verifying Google Agent Development Kit (ADK) agents
 
 # Try in Claude Code, Claude.ai, and the API
 
-
-```
+```bash
 # Set your PROJECT_ID
 export PROJECT_ID=<project id>
 
@@ -48,10 +45,15 @@ git clone https://github.com/jbrache/skills.git
 gcloud auth application-default login
 gcloud config set project $PROJECT_ID
 
-# Set up environment variables to use Vertex AI models:
+# Set up environment variables for Claude:
 export CLAUDE_CODE_USE_VERTEX=1
 export CLOUD_ML_REGION=global
 export ANTHROPIC_VERTEX_PROJECT_ID=$PROJECT_ID
+
+# Set up environment variables for Vertex AI:
+export GOOGLE_CLOUD_PROJECT=$PROJECT_ID
+export GOOGLE_CLOUD_LOCATION=global
+export GOOGLE_GENAI_USE_VERTEXAI=TRUE
 ```
 
 ## Claude Code
@@ -82,7 +84,7 @@ Alternatively, directly [install locally](https://code.claude.com/docs/en/discov
 
 After installing the plugin, you can use the ADK skill by just mentioning it. For instance, you can ask Claude Code to do something like: 
 ```
-Use the google-adk-dev skill to build portfolio news agent - first get portfolio from the tool. For now just fixed GOOGL and NVDA (pick number of stock) 2.execute search to find news from last week 3. create one paragraph summary of impact on the portfolio
+Use the google-adk-skills skill to build portfolio news agent - first get portfolio from the tool. For now just fixed GOOGL and NVDA (pick number of stock) 2.execute search to find news from last week 3. create one paragraph summary of impact on the portfolio
 ```
 
 ## Claude.ai
