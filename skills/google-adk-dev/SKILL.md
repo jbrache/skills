@@ -78,7 +78,7 @@ cd weather_agent
 adk create weather_agent
 ```
 
-Using `adk create` creates the agent project with the following structure, with the agent.py file containing the main control code for the agent.
+Using `adk create` creates the agent project with the following structure in the parent directory, with the agent.py file containing the main control code for the agent.
 ```
 weather_agent/
     weather_agent/
