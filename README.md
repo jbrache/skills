@@ -69,6 +69,8 @@ Then, to install a specific set of skills:
 3. Select `google-adk-skills`
 4. Select `Install now`
 
+Restart Claude Code to apply changes.
+
 Alternatively, directly [install locally](https://code.claude.com/docs/en/discover-plugins#add-from-local-paths):
 ```
 /plugin marketplace add ./skills
