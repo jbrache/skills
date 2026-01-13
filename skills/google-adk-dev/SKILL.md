@@ -74,7 +74,7 @@ pip install google-adk
 ### 1. Create Project
 You will need to create a project structure in a parent folder:
 ```bash
-mkdir -p weather_agent_project && cd weather_agent_project
+mkdir -p adk_agent_project && cd adk_agent_project
 python -m venv .venv
 # Mac / Linux
 source .venv/bin/activate
@@ -91,7 +91,7 @@ adk create weather_agent
 The created agent project has the following structure, with the agent.py file containing the main control code for the agent.
 
 ```
-weather_agent_project/
+adk_agent_project/
     weather_agent/
         agent.py      # main agent code
         .env          # API keys or project IDs
@@ -99,7 +99,7 @@ weather_agent_project/
 ```
 
 ```python
-# weather_agent_project/weather_agent/agent.py
+# weather_agent/agent.py
 from google.adk.agents import LlmAgent
 
 def get_weather(location: str) -> str:
