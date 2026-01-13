@@ -119,6 +119,12 @@ To use any skill from this repository or upload custom skills, follow the instru
 
 You can use Anthropic's pre-built skills, and upload custom skills, via the Claude API. See the [Skills API Quickstart](https://docs.claude.com/en/api/skills-guide#creating-a-skill) for more.
 
+## Improvements for Future
+Will think about building the ultimate Claude Code ADK Agent with context on the full Python codebase. Could probably use an MCP server to:
+* https://deepwiki.com/google/adk-python
+
+This way there's the trifecta 🔱 of **Cloud Skills + Docs MCP + Code MCP**, it's a lot but may be more useful in edge cases with the ADK CLI, where there's situations of missing context.
+
 ## 📝 License
 
 Copyright 2025 Google LLC
