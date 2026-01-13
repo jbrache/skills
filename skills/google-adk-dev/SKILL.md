@@ -48,6 +48,11 @@ echo "GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI" >> .env
 echo "GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION" >> .env
 ```
 
+**Create Agent Project Structure:**
+```bash
+mkdir -p weather_agent && cd weather_agent
+```
+
 **Create & activate virtual environment:**
 ```bash
 python -m venv .venv
@@ -64,12 +69,7 @@ pip install google-adk
 
 ## Quick Start
 
-### 1. Create Project Structure
-```bash
-mkdir -p adk_agent_project && cd adk_agent_project
-```
-
-### 2. Create Your Agent
+### 1. Create Your Agent
 
 Run the `adk create` command to start a new agent project.
 ```bash
@@ -79,7 +79,7 @@ adk create weather_agent
 The created agent project has the following structure, with the agent.py file containing the main control code for the agent.
 
 ```
-adk_agent_project/
+weather_agent/
     weather_agent/
         agent.py      # main agent code
         .env          # API keys or project IDs
@@ -111,7 +111,7 @@ root_agent = LlmAgent(
 )
 ```
 
-### 3. Test Your Agent
+### 2. Test Your Agent
 
 Run your agent using the `adk run` command-line tool and chat.
 ```bash
