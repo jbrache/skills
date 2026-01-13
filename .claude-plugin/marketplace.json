@@ -15,7 +15,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./google-adk-dev"
+        "./skills/google-adk-dev"
       ]
     }
  ]

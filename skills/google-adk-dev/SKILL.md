@@ -99,7 +99,7 @@ weather_agent_project/
 ```
 
 ```python
-# weather_agent/agent.py
+# weather_agent_project/weather_agent/agent.py
 from google.adk.agents import LlmAgent
 
 def get_weather(location: str) -> str:
@@ -176,7 +176,7 @@ agent = LlmAgent(
 ```
 
 ```bash
-adk run weather_agent/ --replay test.json
+adk run weather_agent --replay test.json
 ```
 
 ### Model Selection
