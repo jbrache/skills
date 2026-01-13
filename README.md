@@ -65,7 +65,7 @@ To add an MCP server for the [ADK docs to Claude Code](https://google.github.io/
 claude mcp add adk-docs --scope user --transport stdio -- uvx --from mcpdoc mcpdoc --urls AgentDevelopmentKit:https://google.github.io/adk-docs/llms.txt --transport stdio
 ```
 
-### Step 3. [Optional] Add The DeepWiki MCP server to Claude Code
+### Step 3. [Optional] Add The [DeepWiki MCP server](https://docs.devin.ai/work-with-devin/deepwiki-mcp) to Claude Code
 The DeepWiki MCP server provides programmatic access to DeepWiki’s public repository documentation and search capabilities.
 ```bash
 claude mcp add -s user -t http deepwiki https://mcp.deepwiki.com/mcp
