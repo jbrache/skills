@@ -1,6 +1,6 @@
 ---
 name: google-adk-agent
-description: Build AI agents, chatbots, and autonomous assistants with tools, memory, and multi-agent systems using Python. Use when: (1) Creating agents/chatbots/assistants that use tools (Google Search, APIs, custom functions, databases), (2) Building multi-agent systems with specialized agents that collaborate, (3) Agents that remember conversation history or maintain state, (4) Deploying agents to Cloud Run, Vertex AI Agent Engine, or GKE, (5) Evaluating agent performance with test sets, (6) User mentions 'agent', 'chatbot', 'assistant', 'autonomous', 'multi-agent', 'ADK', or 'agentic'.
+description: "Build AI agents, chatbots, and autonomous assistants with tools, memory, and multi-agent systems using Python. Use when: (1) Creating agents/chatbots/assistants that use tools (Google Search, APIs, custom functions, databases), (2) Building multi-agent systems with specialized agents that collaborate, (3) Agents that remember conversation history or maintain state, (4) Deploying agents to Cloud Run, Vertex AI Agent Engine, or GKE, (5) Evaluating agent performance with test sets, (6) User mentions 'agent', 'chatbot', 'assistant', 'autonomous', 'multi-agent', 'ADK', or 'agentic'."
 ---
 
 # Google Agent Development Kit (ADK) Guide
