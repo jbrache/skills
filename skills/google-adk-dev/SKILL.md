@@ -71,8 +71,10 @@ pip install google-adk
 
 ### 1. Create Your Agent
 
-Run the `adk create` command to start a new agent project in the agent project directory, i.e. `/weather_agent`.
+Run the `adk create` command to create a new agent project in the agent project parent directory, i.e. `/weather_agent`.
+**IMPORTANT**: Use `adk create` to create the agent in the parent directory.
 ```bash
+cd weather_agent
 adk create weather_agent
 ```
 
